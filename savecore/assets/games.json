@@ -1,0 +1,28 @@
+[
+  {
+    "name": "elden ring",
+    "slug": "elden-ring",
+    "ids": { "steam": 1245620, "proc": ["eldenring.exe"] },
+    "save_locations": {
+      "windows": ["%AppData%/EldenRing/{steamId64}"],
+      "linux": [
+        "~/.local/share/Steam/steamapps/compatdata/1245620/pfx/drive_c/users/steamuser/AppData/Roaming/EldenRing/{steamId64}"
+      ]
+    },
+    "patterns": ["ER*.sl2"],
+    "notes": "warn about steam cloud overwrites"
+  },
+  {
+    "name": "lies of p",
+    "slug": "lies-of-p",
+    "ids": { "steam": 1627720, "proc": ["LiesofP-Win64-Shipping.exe"] },
+    "save_locations": {
+      "windows": ["%LocalAppData%/LiesofP/Saved/SaveGames"],
+      "linux": [
+        "~/.local/share/Steam/steamapps/compatdata/1627720/pfx/drive_c/users/steamuser/AppData/Local/LiesofP/Saved/SaveGames"
+      ]
+    },
+    "patterns": ["*.sav", "*.sl2"],
+    "notes": null
+  }
+]

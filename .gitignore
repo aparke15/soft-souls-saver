@@ -1,0 +1,25 @@
+# Rust/Cargo build output
+/target/
+
+# Local backup output from savectl default layout
+/backups/
+
+# Editor and OS noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Logs and local scratch files
+*.log
+*.tmp
+*.temp
+
+# Local environment files
+.env
+.env.*
+
+handoff.md

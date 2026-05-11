@@ -1,0 +1,11 @@
+[package]
+name = "savectl"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.102"
+camino = "1.2.2"
+clap = { version = "4", features = ["derive"] }
+savecore = { path = "../savecore" }
+serde_json = "1.0.149"
