@@ -1,4 +1,4 @@
-use crate::{GameManifest, ops, resolve, types::*};
+use crate::{GameManifest, config, ops, resolve, steam::SteamApp, types::*};
 use anyhow::Context;
 use camino::Utf8PathBuf;
 use chrono::Utc;
@@ -6,10 +6,12 @@ use std::fs;
 
 pub fn backup_game(
     manifest: &GameManifest,
+    steam_app: Option<&SteamApp>,
     options: BackupOptions,
 ) -> anyhow::Result<BackupResult> {
-    let timestamp = Utc::now().format("%Y%m%dT%H%M%SZ").to_string();
-    let candidates = resolve::resolve_save_candidates(manifest, options.steam_id64.as_deref())?;
+    let timestamp = Utc::now().format("%Y%m%dT%H%M%S%.fZ").to_string();
+    let candidates =
+        resolve::resolve_save_candidates(manifest, steam_app, options.steam_id64.as_deref())?;
     let selected = resolve::select_best_candidate(&candidates).with_context(|| {
         let attempted = candidates
             .iter()
@@ -29,8 +31,19 @@ pub fn backup_game(
 
     let source_save_path = selected.path.clone();
     let source = Utf8PathBuf::from(&source_save_path);
-    let output_zip = output_zip_path(manifest, &timestamp, options.output_path.as_deref())?;
-    let metadata_path = default_metadata_path(manifest, &timestamp, options.output_path.as_deref());
+    let backup_root = config::backup_root_path(options.backup_root.as_deref().unwrap_or("backups"));
+    let output_zip = output_zip_path(
+        manifest,
+        &timestamp,
+        options.output_path.as_deref(),
+        &backup_root,
+    )?;
+    let metadata_path = default_metadata_path(
+        manifest,
+        &timestamp,
+        options.output_path.as_deref(),
+        &backup_root,
+    );
     let selected_pattern_list = if selected.matched_patterns.is_empty() {
         manifest.patterns.clone()
     } else {
@@ -48,6 +61,7 @@ pub fn backup_game(
         metadata_path: metadata_path.as_ref().map(ToString::to_string),
         sha256: None,
         dry_run: options.dry_run,
+        activity_warnings: Vec::new(),
     };
 
     if options.dry_run {
@@ -73,6 +87,7 @@ fn output_zip_path(
     manifest: &GameManifest,
     timestamp: &str,
     output_path: Option<&str>,
+    backup_root: &Utf8PathBuf,
 ) -> anyhow::Result<Utf8PathBuf> {
     if let Some(output_path) = output_path {
         let path = Utf8PathBuf::from(output_path);
@@ -82,21 +97,24 @@ fn output_zip_path(
         return Ok(path.join("payload.zip"));
     }
 
-    Ok(default_backup_dir(manifest, timestamp).join("payload.zip"))
+    Ok(default_backup_dir(manifest, timestamp, backup_root).join("payload.zip"))
 }
 
 fn default_metadata_path(
     manifest: &GameManifest,
     timestamp: &str,
     output_path: Option<&str>,
+    backup_root: &Utf8PathBuf,
 ) -> Option<Utf8PathBuf> {
     output_path
         .is_none()
-        .then(|| default_backup_dir(manifest, timestamp).join("metadata.json"))
+        .then(|| default_backup_dir(manifest, timestamp, backup_root).join("metadata.json"))
 }
 
-fn default_backup_dir(manifest: &GameManifest, timestamp: &str) -> Utf8PathBuf {
-    Utf8PathBuf::from("backups")
-        .join(&manifest.slug)
-        .join(timestamp)
+fn default_backup_dir(
+    manifest: &GameManifest,
+    timestamp: &str,
+    backup_root: &Utf8PathBuf,
+) -> Utf8PathBuf {
+    backup_root.join(&manifest.slug).join(timestamp)
 }

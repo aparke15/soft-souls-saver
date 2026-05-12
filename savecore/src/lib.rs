@@ -3,8 +3,12 @@ use serde::{Deserialize, Serialize};
 
 pub mod api;
 pub mod backup;
+pub mod config;
 pub mod ops;
+pub mod process;
 pub mod resolve;
+pub mod restore;
+pub mod snapshot;
 pub mod steam;
 pub mod types;
 

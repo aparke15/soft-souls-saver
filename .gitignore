@@ -1,8 +1,12 @@
 # Rust/Cargo build output
 /target/
 
+# Generated release bundles
+/dist/
+
 # Local backup output from savectl default layout
 /backups/
+**/backups/
 
 # Editor and OS noise
 .DS_Store

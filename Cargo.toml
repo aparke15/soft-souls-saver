@@ -1,5 +1,5 @@
 [workspace]
-members = ["savecore", "savectl"]
+members = ["savecore", "savectl", "saveui"]
 resolver = "2"
 
 [profile.release]

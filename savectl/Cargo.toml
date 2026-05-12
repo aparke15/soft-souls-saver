@@ -8,4 +8,5 @@ anyhow = "1.0.102"
 camino = "1.2.2"
 clap = { version = "4", features = ["derive"] }
 savecore = { path = "../savecore" }
+serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.149"
